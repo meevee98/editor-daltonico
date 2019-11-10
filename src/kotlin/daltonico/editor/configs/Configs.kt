@@ -38,6 +38,9 @@ object Configs {
         if (!file.parentFile.exists()) {
             file.parentFile.mkdirs()
         }
+        if (!file.exists()) {
+            file.createNewFile()
+        }
 
         val mapper = ObjectMapper()
 
