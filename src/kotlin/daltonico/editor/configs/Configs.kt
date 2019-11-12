@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import daltonico.editor.language.EnUs
 import daltonico.editor.language.Language
 import daltonico.editor.language.PtBr
+import daltonico.editor.language.ZhCn
 import java.io.File
 
 object Configs {
@@ -11,7 +12,8 @@ object Configs {
 
     private val languages = mapOf(
         "PtBr" to PtBr(),
-        "EnUs" to EnUs()
+        "EnUs" to EnUs(),
+        "ZhCn" to ZhCn()
     )
     lateinit var lang: Language private set
     private val defaultLang = PtBr()
