@@ -8,7 +8,7 @@ import daltonico.editor.language.ZhCn
 import java.io.File
 
 object Configs {
-    val configFile = "src\\references\\config.json"
+    private val configFile = "src\\resources\\config.json"
 
     private val languages = mapOf(
         "PtBr" to PtBr(),

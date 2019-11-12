@@ -97,4 +97,4 @@ gradle/wrapper/gradle-wrapper.properties
 # ===============================================
 # project.gitignore
 # ===============================================
-src/references/config.json
+src/resources/config.json

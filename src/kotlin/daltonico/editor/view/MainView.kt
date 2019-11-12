@@ -18,19 +18,33 @@ class MainView : View() {
         top = menubar {
             menu {
                 textProperty().bind(lang.file)
-                item(lang.openFile, KeyCombination.valueOf("Ctrl + O"))
-                item(lang.saveFile, KeyCombination.valueOf("Ctrl + S"))
+                item(lang.openFile, KeyCombination.valueOf("Ctrl + O")) {
+                    action { vm.openFile() }
+                }
+                item(lang.saveFile, KeyCombination.valueOf("Ctrl + S")) {
+                    action { vm.saveFile() }
+                }
             }
             menu {
                 textProperty().bind(lang.image)
-                item(lang.grayScale)
-                item(lang.blackWhite)
+                item(lang.grayScale) {
+                    action { vm.grayScale() }
+                }
+                item(lang.blackWhite) {
+                    action { vm.binaryScale() }
+                }
                 menu {
                     textProperty().bind(lang.filters)
-                    item(lang.filter1)
-                    item(lang.filter2)
+                    item(lang.filter1) {
+                        action { vm.applyFilter1() }
+                    }
+                    item(lang.filter2) {
+                        action { vm.applyFilter2() }
+                    }
                 }
-                item(lang.histogram)
+                item(lang.histogram) {
+                    action { vm.showHistogram() }
+                }
             }
             menu {
                 textProperty().bind(lang.options)
