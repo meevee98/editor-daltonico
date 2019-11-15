@@ -4,6 +4,7 @@ import daltonico.editor.configs.Configs
 import daltonico.editor.viewmodel.LanguageViewModel
 import daltonico.editor.viewmodel.MainViewModel
 import javafx.scene.input.KeyCombination
+import javafx.scene.layout.Priority
 import tornadofx.*
 
 class MainView : View() {
@@ -14,8 +15,8 @@ class MainView : View() {
         titleProperty.bind(lang.title)
     }
 
-    override val root = borderpane {
-        top = menubar {
+    override val root = vbox {
+        menubar {
             menu {
                 textProperty().bind(lang.file)
                 item(lang.openFile, KeyCombination.valueOf("Ctrl + O")) {
@@ -61,8 +62,14 @@ class MainView : View() {
                 }
             }
         }
-        center = imageview {
-
+        borderpane {
+            vm.bindSize(this)
+            vgrow = Priority.ALWAYS
+            center = imageview(vm.loadedImageProperty) {
+                isPreserveRatio = true
+                fitHeightProperty().bind(vm.viewHeight)
+                fitWidthProperty().bind(vm.viewWidth)
+            }
         }
     }
 }
