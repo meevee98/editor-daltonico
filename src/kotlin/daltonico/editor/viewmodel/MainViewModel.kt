@@ -14,10 +14,11 @@ import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import javafx.stage.Modality
+import java.io.File
+import kotlin.math.max
 import tornadofx.ViewModel
 import tornadofx.getValue
 import tornadofx.setValue
-import java.io.File
 
 class MainViewModel : ViewModel() {
     private val fileChooser = FileChooser()
@@ -199,16 +200,36 @@ class MainViewModel : ViewModel() {
         val w = image.width.toInt()
         val reader = image.pixelReader
 
-        val array = IntArray(256).also {
+        val red = IntArray(256).also {
+            it.fill(0)
+        }
+        val green = IntArray(256).also {
+            it.fill(0)
+        }
+        val blue = IntArray(256).also {
             it.fill(0)
         }
 
         for (y in 0 until h) {
             for (x in 0 until w) {
                 val color = reader.getColor(x, y)
-                val level = (color.brightness * 255).toInt()
-                array[level] += 1
+                val r = (color.red * 255).toInt()
+                val g = (color.green * 255).toInt()
+                val b = (color.blue * 255).toInt()
+
+                red[r] += 1
+                green[g] += 1
+                blue[b] += 1
             }
+        }
+
+        val array = IntArray(256)
+
+        for (i in 0..255) {
+            var max = max(red[i], green[i])
+            max = max(max, blue[i])
+            
+            array[i] = max
         }
 
         HistogramView(array).openWindow(modality = Modality.WINDOW_MODAL, resizable = false)
