@@ -11,8 +11,8 @@ class PtBr : Language() {
         "gray_scale" to "Escala de cinza",
         "black_white" to "Preto e branco",
         "filters" to "Filtros",
-        "filter_1" to "Filtro 1",
-        "filter_2" to "Filtro 2",
+        "filter_1" to "Projetor",
+        "filter_2" to "Inverter",
         "histogram" to "Histograma",
         "languages" to "Idiomas"
     )

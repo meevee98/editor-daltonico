@@ -11,8 +11,8 @@ class EnUs : Language() {
         "gray_scale" to "Gray Scale",
         "black_white" to "Black and White",
         "filters" to "Filters",
-        "filter_1" to "Filter 1",
-        "filter_2" to "Filter 2",
+        "filter_1" to "Projector",
+        "filter_2" to "Invert",
         "histogram" to "Histogram",
         "languages" to "Languages"
     )

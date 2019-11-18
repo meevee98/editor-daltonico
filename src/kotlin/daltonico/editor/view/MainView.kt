@@ -28,22 +28,22 @@ class MainView : View() {
             }
             menu {
                 textProperty().bind(lang.image)
-                item(lang.grayScale) {
+                item(lang.grayScale, KeyCombination.valueOf("Ctrl + U")) {
                     action { vm.grayScale() }
                 }
-                item(lang.blackWhite) {
+                item(lang.blackWhite, KeyCombination.valueOf("Ctrl + B")) {
                     action { vm.binaryScale() }
                 }
                 menu {
                     textProperty().bind(lang.filters)
-                    item(lang.filter1) {
-                        action { vm.applyFilter1() }
+                    item(lang.filter1, KeyCombination.valueOf("Ctrl + R")) {
+                        action { vm.applyProjectorFilter() }
                     }
-                    item(lang.filter2) {
-                        action { vm.applyFilter2() }
+                    item(lang.filter2, KeyCombination.valueOf("Ctrl + I")) {
+                        action { vm.applyInvertFilter() }
                     }
                 }
-                item(lang.histogram) {
+                item(lang.histogram, KeyCombination.valueOf("Ctrl + H")) {
                     action { vm.showHistogram() }
                 }
             }
@@ -65,7 +65,7 @@ class MainView : View() {
         borderpane {
             vm.bindSize(this)
             vgrow = Priority.ALWAYS
-            center = imageview(vm.loadedImageProperty) {
+            center = imageview(vm.imageProperty) {
                 isPreserveRatio = true
                 fitHeightProperty().bind(vm.viewHeight)
                 fitWidthProperty().bind(vm.viewWidth)
