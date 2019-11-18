@@ -19,6 +19,7 @@ class PtBr : Language() {
         "save_changes" to "Deseja salvar as alterações?",
         "save" to "Salvar",
         "dont_save" to "Não Salvar",
-        "cancel" to "Cancelar"
+        "cancel" to "Cancelar",
+        "something_went_wrong" to "Algo deu errado. Por favor, aguarde um momento e tente novamente mais tarde."
     )
 }

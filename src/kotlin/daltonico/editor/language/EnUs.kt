@@ -19,6 +19,7 @@ class EnUs : Language() {
         "save_changes" to "Do you want to save changes?",
         "save" to "Save",
         "dont_save" to "Don't save",
-        "cancel" to "Cancel"
+        "cancel" to "Cancel",
+        "something_went_wrong" to "Something went wrong. Please wait a second and try again later."
     )
 }

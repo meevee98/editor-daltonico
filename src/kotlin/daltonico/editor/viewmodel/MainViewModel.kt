@@ -16,6 +16,7 @@ import javafx.stage.Modality
 import tornadofx.ViewModel
 import tornadofx.getValue
 import tornadofx.setValue
+import java.io.File
 
 class MainViewModel : ViewModel() {
     private val fileChooser = FileChooser()
@@ -38,9 +39,12 @@ class MainViewModel : ViewModel() {
             image = newValue
         }
         loadedImage = defaultImage
+        bindFileChooserDirectory()
         bindDisableSave()
         bindDisableFilters()
     }
+
+    // region Databind
 
     fun bindSize(view: Pane) {
         // TODO
@@ -60,43 +64,44 @@ class MainViewModel : ViewModel() {
         }
     }
 
-    fun openFile() {
-        if (!disableSave.get()) {
-            val dialog = find<SaveConfirmationView>()
-            dialog.openModal(modality = Modality.WINDOW_MODAL, block = true)
+    private fun bindFileChooserDirectory() {
+        Configs.defaultDirectory?.let {
+            val directory = File(it)
 
-            val result = dialog.getResult()
-            if (result == SaveConfirmationDialogResult.CANCEL) {
-                return
-            }
-
-            if (result == SaveConfirmationDialogResult.SAVE) {
-                saveFile()
+            if (directory.exists() && directory.isDirectory) {
+                fileChooser.initialDirectory = directory
             }
         }
 
-        val stage = find(MainView::class).primaryStage
-        fileChooser.apply {
-            extensionFilters.clear()
-            extensionFilters.add(
-                FileChooser.ExtensionFilter(
-                    "Arquivos de imagem",
-                    "*.jpg", "*.jpeg", "*.jpe", "*.jfif",
-                    "*.tif", "*.tiff",
-                    "*.png",
-                    "*.gif",
-                    "*.ico",
-                    "*.heic",
-                    "*.webp"
-                )
-            )
-        }.showOpenDialog(stage)?.let {
-            try {
-                fileChooser.initialDirectory = it.parentFile
-                loadedImage = Image(it.toURI().toString())
+        fileChooser.initialDirectoryProperty().addListener { observable, oldValue, newValue ->
+            if (newValue.isDirectory) {
+                Configs.changeDefaultDirectory(newValue.absolutePath)
             }
-            catch (e: Exception) {
-                throw Exception("${Configs.lang["something_went_wrong"]} ${e.localizedMessage}")
+        }
+    }
+
+    // endregion
+
+    fun openFile() {
+        if (confirmSave()) {
+            val stage = find(MainView::class).primaryStage
+            fileChooser.apply {
+                extensionFilters.clear()
+                extensionFilters.add(
+                    FileChooser.ExtensionFilter(
+                        "Arquivos de imagem",
+                        "*.jpg", "*.jpeg",
+                        "*.png",
+                        "*.gif"
+                    )
+                )
+            }.showOpenDialog(stage)?.let {
+                try {
+                    fileChooser.initialDirectory = it.parentFile
+                    loadedImage = Image(it.toURI().toString())
+                } catch (e: Exception) {
+                    throw Exception("${Configs.lang["something_went_wrong"]} ${e.localizedMessage}")
+                }
             }
         }
     }
@@ -123,20 +128,26 @@ class MainViewModel : ViewModel() {
     }
 
     fun closeFile() {
+        if (confirmSave()) {
+            loadedImage = defaultImage
+        }
+    }
+
+    private fun confirmSave(): Boolean {
         if (!disableSave.get()) {
             val dialog = find<SaveConfirmationView>()
             dialog.openModal(modality = Modality.WINDOW_MODAL, block = true)
 
             val result = dialog.getResult()
             if (result == SaveConfirmationDialogResult.CANCEL) {
-                return
+                return false
             }
 
             if (result == SaveConfirmationDialogResult.SAVE) {
                 saveFile()
             }
         }
-        loadedImage = defaultImage
+        return true
     }
 
     fun grayScale() {
