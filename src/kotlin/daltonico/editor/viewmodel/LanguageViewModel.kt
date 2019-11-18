@@ -2,47 +2,34 @@ package daltonico.editor.viewmodel
 
 import daltonico.editor.configs.Configs
 import daltonico.editor.language.Language
-import javafx.beans.property.SimpleStringProperty
+import javafx.beans.property.SimpleObjectProperty
+import javafx.beans.property.StringProperty
 import tornadofx.ViewModel
+import tornadofx.getValue
+import tornadofx.setValue
+import tornadofx.toProperty
 
-class LanguageViewModel: ViewModel() {    
-    val title = SimpleStringProperty()
-
-    val file = SimpleStringProperty()
-    val openFile = SimpleStringProperty()
-    val saveFile = SimpleStringProperty()
-
-    val image = SimpleStringProperty()
-    val grayScale = SimpleStringProperty()
-    val blackWhite = SimpleStringProperty()
-    val filters = SimpleStringProperty()
-    val filter1 = SimpleStringProperty()
-    val filter2 = SimpleStringProperty()
-    val histogram = SimpleStringProperty()
-
-    val options = SimpleStringProperty()
-    val languages = SimpleStringProperty()
+class LanguageViewModel: ViewModel() {
+    private val dictionaryProperty = SimpleObjectProperty<HashMap<String, StringProperty>>()
+    var dictionary: HashMap<String, StringProperty> by dictionaryProperty
 
     init {
+        dictionary = hashMapOf()
         setAllValues(Configs.lang)
     }
-    
+
     fun setAllValues(language: Language) {
-        title.set(language["title"])
+        language.dictionary.forEach { (key, value) ->
+            if (!dictionary.containsKey(key)) {
+                dictionary[key] = value.toProperty()
+            }
+            else {
+                dictionary[key]?.set(value)
+            }
+        }
+    }
 
-        file.set(language["file"])
-        openFile.set(language["open_file"])
-        saveFile.set(language["save_file"])
-
-        image.set(language["image"])
-        grayScale.set(language["gray_scale"])
-        blackWhite.set(language["black_white"])
-        filters.set(language["filters"])
-        filter1.set(language["filter_1"])
-        filter2.set(language["filter_2"])
-        histogram.set(language["histogram"])
-
-        options.set(language["options"])
-        languages.set(language["languages"])
+    operator fun get(key: String): StringProperty {
+        return dictionary[key] ?: key.toProperty()
     }
 }

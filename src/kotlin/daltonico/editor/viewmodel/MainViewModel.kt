@@ -1,7 +1,10 @@
 package daltonico.editor.viewmodel
 
 import daltonico.editor.configs.Configs
+import daltonico.editor.enum.SaveConfirmationDialogResult
 import daltonico.editor.view.MainView
+import daltonico.editor.view.SaveConfirmationView
+import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.image.Image
@@ -9,37 +12,34 @@ import javafx.scene.image.WritableImage
 import javafx.scene.layout.Pane
 import javafx.scene.paint.Color
 import javafx.stage.FileChooser
+import javafx.stage.Modality
 import tornadofx.ViewModel
 import tornadofx.getValue
 import tornadofx.setValue
 
 class MainViewModel : ViewModel() {
-    private val fileChooser = FileChooser().apply {
-        extensionFilters.add(
-            FileChooser.ExtensionFilter(
-                "Arquivos de imagem",
-                "*.jpg", "*.jpeg", "*.jpe", "*.jfif",
-                "*.tif", "*.tiff",
-                "*.png",
-                "*.gif",
-                "*.ico",
-                "*.heic",
-                "*.webp"
-            )
-        )
-    }
+    private val fileChooser = FileChooser()
+    private var defaultImage = Image("file:src/resources/default_img.png")
 
-    val loadedImageProperty = SimpleObjectProperty(Image("file:src/resources/default_img.png"))
+    val loadedImageProperty = SimpleObjectProperty<Image>()
     private var loadedImage: Image by loadedImageProperty
 
     val imageProperty = SimpleObjectProperty<Image>()
     private var image: Image by imageProperty
 
+    val disableSave = SimpleBooleanProperty(true)
+    val disableFilters = SimpleBooleanProperty(true)
+
     val viewWidth = SimpleDoubleProperty(0.0)
     val viewHeight = SimpleDoubleProperty(0.0)
 
     init {
-        image = loadedImage
+        loadedImageProperty.addListener { observable, oldValue, newValue -> 
+            image = newValue
+        }
+        loadedImage = defaultImage
+        bindDisableSave()
+        bindDisableFilters()
     }
 
     fun bindSize(view: Pane) {
@@ -48,31 +48,95 @@ class MainViewModel : ViewModel() {
         viewHeight.set(600.0)
     }
 
+    private fun bindDisableSave() {
+        imageProperty.addListener { observable, oldValue, newValue ->
+            disableSave.set(newValue == loadedImage)
+        }
+    }
+
+    private fun bindDisableFilters() {
+        imageProperty.addListener { observable, oldValue, newValue ->
+            disableFilters.set(newValue == defaultImage)
+        }
+    }
+
     fun openFile() {
+        if (!disableSave.get()) {
+            val dialog = find<SaveConfirmationView>()
+            dialog.openModal(modality = Modality.WINDOW_MODAL, block = true)
+
+            val result = dialog.getResult()
+            if (result == SaveConfirmationDialogResult.CANCEL) {
+                return
+            }
+
+            if (result == SaveConfirmationDialogResult.SAVE) {
+                saveFile()
+            }
+        }
+
         val stage = find(MainView::class).primaryStage
-        fileChooser.showOpenDialog(stage)?.let {
+        fileChooser.apply {
+            extensionFilters.clear()
+            extensionFilters.add(
+                FileChooser.ExtensionFilter(
+                    "Arquivos de imagem",
+                    "*.jpg", "*.jpeg", "*.jpe", "*.jfif",
+                    "*.tif", "*.tiff",
+                    "*.png",
+                    "*.gif",
+                    "*.ico",
+                    "*.heic",
+                    "*.webp"
+                )
+            )
+        }.showOpenDialog(stage)?.let {
             try {
                 fileChooser.initialDirectory = it.parentFile
                 loadedImage = Image(it.toURI().toString())
-                image = loadedImage
             }
             catch (e: Exception) {
-                println("${Configs.lang["something_went_wrong"]} ${e.localizedMessage}")
+                throw Exception("${Configs.lang["something_went_wrong"]} ${e.localizedMessage}")
             }
         }
     }
 
     fun saveFile() {
         val stage = find(MainView::class).primaryStage
-        fileChooser.showSaveDialog(stage)?.let {
+        fileChooser.apply {
+            extensionFilters.clear()
+            extensionFilters.add(
+                FileChooser.ExtensionFilter(
+                    "Arquivos de imagem (*.png)",
+                    "*.png"
+                )
+            )
+        }.showSaveDialog(stage)?.let {
             try {
                 fileChooser.initialDirectory = it.parentFile
                 println("TODO: save ${it.absolutePath}")
             }
             catch (e: Exception) {
-                println("${Configs.lang["something_went_wrong"]} ${e.localizedMessage}")
+                throw Exception("${Configs.lang["something_went_wrong"]} ${e.localizedMessage}")
             }
         }
+    }
+
+    fun closeFile() {
+        if (!disableSave.get()) {
+            val dialog = find<SaveConfirmationView>()
+            dialog.openModal(modality = Modality.WINDOW_MODAL, block = true)
+
+            val result = dialog.getResult()
+            if (result == SaveConfirmationDialogResult.CANCEL) {
+                return
+            }
+
+            if (result == SaveConfirmationDialogResult.SAVE) {
+                saveFile()
+            }
+        }
+        loadedImage = defaultImage
     }
 
     fun grayScale() {
