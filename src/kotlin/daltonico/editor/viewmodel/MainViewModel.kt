@@ -5,7 +5,9 @@ import daltonico.editor.view.MainView
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
 import javafx.scene.image.Image
+import javafx.scene.image.WritableImage
 import javafx.scene.layout.Pane
+import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import tornadofx.ViewModel
 import tornadofx.getValue
@@ -30,8 +32,15 @@ class MainViewModel : ViewModel() {
     val loadedImageProperty = SimpleObjectProperty(Image("file:src/resources/default_img.png"))
     private var loadedImage: Image by loadedImageProperty
 
+    val imageProperty = SimpleObjectProperty<Image>()
+    private var image: Image by imageProperty
+
     val viewWidth = SimpleDoubleProperty(0.0)
     val viewHeight = SimpleDoubleProperty(0.0)
+
+    init {
+        image = loadedImage
+    }
 
     fun bindSize(view: Pane) {
         // TODO
@@ -45,6 +54,7 @@ class MainViewModel : ViewModel() {
             try {
                 fileChooser.initialDirectory = it.parentFile
                 loadedImage = Image(it.toURI().toString())
+                image = loadedImage
             }
             catch (e: Exception) {
                 println("${Configs.lang["something_went_wrong"]} ${e.localizedMessage}")
@@ -79,12 +89,50 @@ class MainViewModel : ViewModel() {
 
     // region Filters
 
-    fun applyFilter1() {
+    fun applyProjectorFilter() {
+        val h = image.height.toInt()
+        val w = image.width.toInt()
 
+        val writableImage = WritableImage(w, h)
+        val reader = image.pixelReader
+        val writer = writableImage.pixelWriter
+
+        for (y in 0 until h) {
+            for (x in 0 until w) {
+                val color = reader.getColor(x, y)
+                writer.setColor(x, y, Color(
+                    0.0,
+                    color.green,
+                    color.blue,
+                    color.opacity
+                ))
+            }
+        }
+
+        image = writableImage
     }
 
-    fun applyFilter2() {
+    fun applyInvertFilter() {
+        val h = image.height.toInt()
+        val w = image.width.toInt()
 
+        val writableImage = WritableImage(w, h)
+        val reader = image.pixelReader
+        val writer = writableImage.pixelWriter
+
+        for (y in 0 until h) {
+            for (x in 0 until w) {
+                val color = reader.getColor(x, y)
+                writer.setColor(x, y, Color(
+                    1 - color.red,
+                    1 - color.green,
+                    1 - color.blue,
+                    color.opacity
+                ))
+            }
+        }
+
+        image = writableImage
     }
 
     // endregion

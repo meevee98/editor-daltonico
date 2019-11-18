@@ -11,8 +11,8 @@ class ZhCn : Language() {
         "gray_scale" to "灰度",
         "black_white" to "黑白",
         "filters" to "过滤",
-        "filter_1" to "过滤 1",
-        "filter_2" to "过滤 2",
+        "filter_1" to "Projector", // Sun, traduz pra nós por favor :)
+        "filter_2" to "Invert",
         "histogram" to "直方图",
         "languages" to "语言"
     )
