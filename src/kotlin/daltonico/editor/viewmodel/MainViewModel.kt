@@ -2,6 +2,7 @@ package daltonico.editor.viewmodel
 
 import daltonico.editor.configs.Configs
 import daltonico.editor.enum.SaveConfirmationDialogResult
+import daltonico.editor.view.HistogramView
 import daltonico.editor.view.MainView
 import daltonico.editor.view.SaveConfirmationView
 import javafx.beans.property.SimpleBooleanProperty
@@ -194,7 +195,23 @@ class MainViewModel : ViewModel() {
     }
 
     fun showHistogram() {
+        val h = image.height.toInt()
+        val w = image.width.toInt()
+        val reader = image.pixelReader
 
+        val array = IntArray(256).also {
+            it.fill(0)
+        }
+
+        for (y in 0 until h) {
+            for (x in 0 until w) {
+                val color = reader.getColor(x, y)
+                val level = (color.brightness * 255).toInt()
+                array[level] += 1
+            }
+        }
+
+        HistogramView(array).openWindow(modality = Modality.WINDOW_MODAL, resizable = false)
     }
 
     // region Filters
