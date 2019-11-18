@@ -76,11 +76,46 @@ class MainViewModel : ViewModel() {
     }
 
     fun grayScale() {
+        val h = image.height.toInt()
+        val w = image.width.toInt()
 
+        val writableImage = WritableImage(w, h)
+        val reader = image.pixelReader
+        val writer = writableImage.pixelWriter
+
+        for (x in 0 until w) {
+            for (y in 0 until h) {
+                val color = reader.getColor(x, y)
+                writer.setColor(x, y, color.grayscale())
+            }
+        }
+
+        image = writableImage
     }
 
     fun binaryScale() {
+        val h = image.height.toInt()
+        val w = image.width.toInt()
 
+        val writableImage = WritableImage(w, h)
+        val reader = image.pixelReader
+        val writer = writableImage.pixelWriter
+
+        for (x in 0 until w) {
+            for (y in 0 until h) {
+                val color = reader.getColor(x, y)
+
+                val newColor = if (color.brightness > 0.5) {
+                    Color(1.0, 1.0, 1.0, color.opacity)
+                } else {
+                    Color(0.0, 0.0, 0.0, color.opacity)
+                }
+
+                writer.setColor(x, y, newColor)
+            }
+        }
+
+        image = writableImage
     }
 
     fun showHistogram() {
