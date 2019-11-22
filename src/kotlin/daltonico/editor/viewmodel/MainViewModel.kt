@@ -8,6 +8,7 @@ import daltonico.editor.view.SaveConfirmationView
 import javafx.beans.property.SimpleBooleanProperty
 import javafx.beans.property.SimpleDoubleProperty
 import javafx.beans.property.SimpleObjectProperty
+import javafx.embed.swing.SwingFXUtils
 import javafx.scene.image.Image
 import javafx.scene.image.WritableImage
 import javafx.scene.layout.Pane
@@ -15,6 +16,7 @@ import javafx.scene.paint.Color
 import javafx.stage.FileChooser
 import javafx.stage.Modality
 import java.io.File
+import javax.imageio.ImageIO
 import kotlin.math.max
 import tornadofx.ViewModel
 import tornadofx.getValue
@@ -121,7 +123,8 @@ class MainViewModel : ViewModel() {
         }.showSaveDialog(stage)?.let {
             try {
                 fileChooser.initialDirectory = it.parentFile
-                println("TODO: save ${it.absolutePath}")
+                val bufferedImage = SwingFXUtils.fromFXImage(image, null)
+                ImageIO.write(bufferedImage, "png", it)
             }
             catch (e: Exception) {
                 throw Exception("${Configs.lang["something_went_wrong"]} ${e.localizedMessage}")
