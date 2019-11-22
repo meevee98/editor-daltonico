@@ -3,11 +3,16 @@ package daltonico.editor
 import javafx.stage.Stage
 import tornadofx.App
 import daltonico.editor.view.MainView
+import javafx.scene.Scene
+import javafx.scene.image.Image
+import javafx.stage.StageStyle
+import tornadofx.UIComponent
 
 class MainApp : App(MainView::class) {
     override fun start(stage: Stage) {
-        stage.minHeight = 600.0
-        stage.minWidth = 800.0
+        stage.minWidth = 816.0
+        stage.minHeight = 664.0
+        stage.icons += Image("file:src/resources/icon.png")
         super.start(stage)
     }
 
