@@ -19,6 +19,7 @@ class ZhCn : Language() {
         "save_changes" to "您要保存更改吗?",
         "save" to "保存",
         "dont_save" to "不保存",
-        "cancel" to "取消"
+        "cancel" to "取消",
+        "something_went_wrong" to "有错误，请稍等程序回答然后重新操作"
     )
 }
